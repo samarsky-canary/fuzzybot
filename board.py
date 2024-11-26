@@ -3,7 +3,9 @@ import random
 
 import pygame
 
-from config import Bot, Game, Obstacle, Goal
+from game_objects.goal import Goal
+from game_objects.obstacle import Obstacle
+from game import Game
 
 
 def load_obstacles(game: Game):
@@ -13,8 +15,8 @@ def load_obstacles(game: Game):
     ]
     game.load_obstacles(obstacles)
 def load_goal(game: Game):
-    x = random.randrange(0, 1060)
-    y = random.randrange(0, 798)
+    x = random.randrange(0, game.screen_width)
+    y = random.randrange(0, game.screen_height)
     game.load_goal(Goal(x, y))
 
 def main():
