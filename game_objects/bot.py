@@ -5,7 +5,10 @@ class Bot(pygame.sprite.Sprite):
 
     def __init__(self, rad, x, y, speed):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("./sprites/tonk.png")
+        # self.image = pygame.image.load("./sprites/tonk.png")
+        self.image = pygame.Surface((rad * 2, rad * 2), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, (55, 55, 55, 100), (rad, rad), rad)
+        pygame.draw.line(self.image, (0, 0, 0), (rad, rad), (rad,0), 2)
         self.org_image = self.image.copy()
 
         self.rect = self.image.get_rect(center=(x, y))
@@ -23,9 +26,13 @@ class Bot(pygame.sprite.Sprite):
     # bot can turn left and right
     def handle_events(self):
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_LEFT]:
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_a]:
             self.angle += 3
-        if pressed[pygame.K_RIGHT]:
+        if pressed[pygame.K_UP] or pressed[pygame.K_w]:
+            self.move(-self.speed)
+        if pressed[pygame.K_DOWN] or pressed[pygame.K_s]:
+            self.move(self.speed)
+        if pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
             self.angle -= 3
         if abs(self.angle) == 360 : self.angle = 0
 

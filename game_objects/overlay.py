@@ -1,5 +1,7 @@
 import pygame
 
+BORDER_WIDTH = 5
+
 
 class Overlay:
     def __init__(self):
@@ -12,5 +14,5 @@ class Overlay:
         self.angle = angle
         self.dist = self.font.render("Distance To Goal: {}".format(self.dist_to_goal), True, (0, 0, 0))
         self.angle = self.font.render("Bot Angle (rad): {}".format(self.angle), True, (0, 0, 0))
-        screen.blit(self.dist, (0, 0))
-        screen.blit(self.angle, (0, 25))
+        screen.blit(self.dist, (BORDER_WIDTH + 0, BORDER_WIDTH + 0))
+        screen.blit(self.angle, (BORDER_WIDTH + 0, BORDER_WIDTH + 25))

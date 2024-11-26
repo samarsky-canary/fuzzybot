@@ -8,12 +8,12 @@ from game_objects.overlay import Overlay
 
 class Game:
 
-    def __init__(self, w, h, x, y):
+    def __init__(self, w, h, x, y, speed):
         self.run = True
         self.screen_width = w
         self.screen_height = h
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        self.background = (252, 249, 217)
+        self.background = (252, 255, 255)
         # all_sprites is used to update and draw all sprites together.
         self.all_sprites = pygame.sprite.Group()
         self.obstacles = pygame.sprite.Group()
@@ -21,7 +21,7 @@ class Game:
         self.overlay = Overlay()
 
         # init bot
-        self.bot = Bot(5, x, y, 3)
+        self.bot = Bot(20, x, y, speed)
         self.bot.set_borders(self.screen.get_width(), self.screen.get_height())
         self.all_sprites.add(self.bot)
         self.goal = None
@@ -40,11 +40,6 @@ class Game:
         self.bot.handle_events()
 
 
-        # bot moves forward and backward only
-        if keys[pygame.K_UP]:
-            self.bot.move(-5)
-        if keys[pygame.K_DOWN]:
-            self.bot.move(5)
 
         try:
             # close the game if Escape or X cross clicked
@@ -70,14 +65,12 @@ class Game:
             obstacle.image.fill(color)
 
         collide = self.bot.rect.colliderect(self.goal.rect)
-        color = "white" if collide else "gold"
+        color = "green" if collide else "gold"
         self.goal.image.fill(color)
 
 
     def draw(self):
         self.screen.fill(self.background)
-
-
         self.overlay.draw(self.screen, self.dist_to_goal(), self.bot.angle)
         self.all_sprites.draw(self.screen)  # Draw the contained sprites.
-        pygame.display.update()
+        pygame.display.flip()
