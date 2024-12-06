@@ -33,7 +33,7 @@ def main():
 
     x = random.randrange(0, SCREEN_WIDTH)
     y = random.randrange(0, SCREEN_HEIGHT)
-    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, x, y, 5)
+    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, x, y)
     load_obstacles(game)
     load_goal(game)
 
