@@ -11,13 +11,13 @@ def bot_speed(front_distance, angle_goal_player):
 
 
 
-    f_sens = ctrl.Antecedent(np.arange(0, 50, 0.2), 'f_sens')
-    f_sens['danger'] = fuzz.trimf(f_sens.universe, [2, 10, 15])
-    f_sens['close'] = fuzz.trimf(f_sens.universe, [5, 20, 25])
-    f_sens['med'] = fuzz.trimf(f_sens.universe, [15, 30, 40])
-    f_sens['far'] = fuzz.trimf(f_sens.universe, [30, 40, 50])
+    f_sens = ctrl.Antecedent(np.arange(0, 50, 1), 'f_sens')
+    f_sens['danger'] = fuzz.trimf(f_sens.universe, [0, 10, 15])
+    f_sens['close'] = fuzz.trimf(f_sens.universe, [20, 30, 35])
+    f_sens['med'] = fuzz.trimf(f_sens.universe, [30, 40, 50])
+    f_sens['far'] = fuzz.trimf(f_sens.universe, [40, 60, 70])
 
-    atg = ctrl.Antecedent(np.arange(-180, 180, 1.0), 'atg')
+    atg = ctrl.Antecedent(np.arange(-200, 200, 1.0), 'atg')
     atg['full_left'] = fuzz.trimf(atg.universe, [-200, -120, -70])
     atg['left'] = fuzz.trimf(atg.universe, [-100, -60, -20])
     atg['small_left'] = fuzz.trimf(atg.universe, [-30, -15, -2])
@@ -79,6 +79,12 @@ def bot_speed(front_distance, angle_goal_player):
     rules.append(ctrl.Rule(f_sens['med'], bot_turn['small_right']))
     rules.append(ctrl.Rule(f_sens['far'], bot_turn['straight']))
 
+    rules.append(ctrl.Rule(f_sens['far'] & atg['full_left'], bot_speed['low']))
+    rules.append(ctrl.Rule(f_sens['far'] & atg['full_right'], bot_speed['low']))
+    rules.append(ctrl.Rule(f_sens['far'] & atg['full_left'], bot_turn['full_left']))
+    rules.append(ctrl.Rule(f_sens['far'] & atg['full_right'], bot_turn['full_left']))
+    rules.append(ctrl.Rule(f_sens['danger'] & atg['straight'], bot_turn['full_left']))
+    #
     # rules.append(ctrl.Rule(f_sens['danger'] & atg['straight'], bot_turn['full_left']))
     # rules.append(ctrl.Rule(f_sens['close'] & atg['straight'], bot_turn['full_left']))
     # rules.append(ctrl.Rule(f_sens['med'] & atg['straight'], bot_turn['left']))
@@ -87,6 +93,10 @@ def bot_speed(front_distance, angle_goal_player):
     # rules.append(ctrl.Rule(f_sens['danger'] & atg['right'], bot_turn['full_right']))
     # rules.append(ctrl.Rule(f_sens['close'] & atg['right'], bot_turn['full_right']))
     # rules.append(ctrl.Rule(f_sens['med'] & atg['right'], bot_turn['right']))
+    #
+    # rules.append(ctrl.Rule(f_sens['danger'] & atg['left'], bot_turn['full_left']))
+    # rules.append(ctrl.Rule(f_sens['close'] & atg['left'], bot_turn['full_left']))
+    # rules.append(ctrl.Rule(f_sens['med'] & atg['left'], bot_turn['left']))
 
 
     # rules.append(ctrl.Rule(l_sens['danger'], bot_speed['stop']))

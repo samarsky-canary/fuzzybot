@@ -7,20 +7,18 @@ BORDER_WIDTH = 5
 
 class Overlay:
     def __init__(self):
-        self.dist_to_goal = self.angle = self.dist_to_obst = 0
         self.font = pygame.font.SysFont("Comic Sans MS", 15)
-        self.dist = self.angle = self.obsDist = None
+        self.dist = self.angle = self.obsDist = self.angle_goal = None
 
-    def draw(self, screen, dist, angle, dist_to_obst):
-        self.dist_to_goal = dist
-        self.angle = angle
-        self.dist_to_obst = dist_to_obst
-        self.dist = self.font.render("Distance To Goal: {}".format(self.dist_to_goal), True, (0, 0, 0))
-        self.angle = self.font.render("Bot Angle (rad): {}".format(f"{self.angled(self.angle):.0f}"), True, (0, 0, 0))
-        self.obsDist = self.font.render("Obst Dist (rad): {}".format(self.dist_to_obst), True, (0, 0, 0))
+    def draw(self, screen, dist, angle, dist_to_obst, angle_to_goal):
+        self.dist = self.font.render("Distance To Goal: {}".format(dist), True, (0, 0, 0))
+        self.angle = self.font.render("Bot Angle (rad): {}".format(f"{self.angled(angle):.0f}"), True, (0, 0, 0))
+        self.obsDist = self.font.render("Obst Dist (rad): {}".format(f"{dist_to_obst:.1f}"), True, (0, 0, 0))
+        self.angle_goal = self.font.render("Angle to Goal (rad): {}".format(f"{angle_to_goal:.1f}"), True, (0, 0, 0))
         screen.blit(self.dist, (BORDER_WIDTH + 0, BORDER_WIDTH + 0))
         screen.blit(self.angle, (BORDER_WIDTH + 0, BORDER_WIDTH + 25))
         screen.blit(self.obsDist, (BORDER_WIDTH + 0, BORDER_WIDTH + 50))
+        screen.blit(self.angle_goal, (BORDER_WIDTH + 0, BORDER_WIDTH + 75))
 
     @staticmethod
     def angled(angle):

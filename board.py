@@ -1,3 +1,4 @@
+import json
 import sys
 import random
 
@@ -11,19 +12,21 @@ SCREEN_WIDTH = 1060
 SCREEN_HEIGHT = 798
 BORDER_WIDTH = 5
 
-def load_obstacles(game: Game):
+def load_obstacles(game: Game, json):
     obstacles = [
         Obstacle(0, 0, SCREEN_WIDTH, BORDER_WIDTH),
         Obstacle(SCREEN_WIDTH - BORDER_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT),
         Obstacle(0, 0, BORDER_WIDTH, SCREEN_HEIGHT),
         Obstacle(0, SCREEN_HEIGHT - BORDER_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT),
-        Obstacle(760, 0, 90, 200),
-        Obstacle(200, 600, 330, 10),
     ]
+    for i in json['obstacles']:
+        obs = Obstacle(i['x'], i['y'], i['w'], i['h'])
+        obstacles.append(obs)
+
     game.load_obstacles(obstacles)
-def load_goal(game: Game):
-    x = random.randrange(0, game.screen_width)
-    y = random.randrange(0, game.screen_height)
+def load_goal(game: Game, data):
+    x = data['goal']['x']
+    y = data['goal']['y']
     game.load_goal(Goal(x, y))
 
 def main():
@@ -31,11 +34,15 @@ def main():
     pygame.display.set_caption("Tonk goin home")
     clock = pygame.time.Clock()
 
-    x = random.randrange(0, SCREEN_WIDTH)
-    y = random.randrange(0, SCREEN_HEIGHT)
-    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, x, y)
-    load_obstacles(game)
-    load_goal(game)
+    px = py = 0
+    with open('config.json') as f:
+        data = json.load(f)
+
+    px = data['player']['x']
+    py = data['player']['y']
+    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, px, py)
+    load_obstacles(game, data)
+    load_goal(game, data)
 
     while game.run:
         game.handle_events()

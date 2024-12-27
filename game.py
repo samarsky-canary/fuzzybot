@@ -19,6 +19,7 @@ class Game:
         self.obstacles = pygame.sprite.Group()
         self.goals = pygame.sprite.Group()
         self.overlay = Overlay()
+        self.win = False
 
         # init bot
         self.bot = Bot(20, x, y)
@@ -34,6 +35,7 @@ class Game:
         self.all_sprites.add(goal)
         self.goals.add(goal)
         self.goal = goal
+        self.bot.goal = self.goal.rect
 
     def handle_events(self):
         keys = pygame.key.get_pressed()
@@ -55,32 +57,43 @@ class Game:
         return round(dist, 2)
 
     def dist_to_obstacle(self):
-        return self.bot.calc_distance(self.obstacles)
+        pup = self.bot.calc_distance(self.obstacles)
+        obstInfo = min([x for xs in pup for x in xs], key=lambda r: r['distance'])
+
+        self.bot.nearest_obstacle = obstInfo['distance']
+        return self.bot.nearest_obstacle
 
     def update(self):
         # Calls `update` methods of all contained sprites.
         self.all_sprites.update()
+        collided = False
         for obstacle in self.obstacles:
             collide = self.bot.rect.colliderect(obstacle.rect)
             color = "red" if collide else "black"
+            if color == "red": collided = True
             obstacle.image.fill(color)
 
+        self.bot.collided = collided
         collide = self.bot.rect.colliderect(self.goal.rect)
         color = "green" if collide else "gold"
-        self.goal.image.fill(color)
+        if color == 'green':
+            self.win = True
+            self.bot.stop = True
+        self.goal.changeColor(color)
 
 
     def draw(self):
         self.screen.fill(self.background)
         # Get the angle between the two rectangles
-        self.angle_between_rects(self.goal.rect)
+        self.angle_between_bot_n_goal()
+        self.dist_to_obstacle()
 
-        self.overlay.draw(self.screen, self.dist_to_goal(), self.bot.angle, self.dist_to_obstacle())
+        self.overlay.draw(self.screen, self.dist_to_goal(), self.bot.angle, self.bot.nearest_obstacle, self.bot.angle_to_goal)
         pygame.draw.line(self.screen, (200, 200, 200), self.bot.rect.center, self.goal.rect.center, 4)
         self.all_sprites.draw(self.screen)  # Draw the contained sprites.
         pygame.display.flip()
 
-    def angle_between_rects(self, rect):
+    def angle_between_bot_n_goal(self):
         vector = pygame.Vector2(1, 0).rotate(-self.bot.angle)
 
         # Calculate the center points
@@ -97,6 +110,11 @@ class Game:
         angle_deg = math.degrees(angle_rad)
         angle_between = angle_deg % 360
         vector2 = pygame.Vector2(0, 1).rotate(angle_deg)
-        self.bot.angle_to_goal = vector.angle_to(vector2)
-        print(f"Angle in radians: {self.bot.angle_to_goal:.1f}")
+        angle_to_goal = vector.angle_to(vector2)
+        if (angle_to_goal < - 180):
+            angle_to_goal = 360 + angle_to_goal
+        elif (angle_to_goal > 180):
+            angle_to_goal = 360 - angle_to_goal
+        self.bot.angle_to_goal = angle_to_goal
+        # print(f"Angle in radians: {self.bot.angle_to_goal:.1f}")
 
